@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="Cell使用RAC信号绑定场景 对应UITableViewCell的重用机制RAC提供了一种重用信号，cell在订阅信号时通常需要takeUntil:self.rac_prepareForReuseSignal 对于所有的UI操作必须放在主线程执行（iOS11系统以后，如果检测到UI操作不在主线程程序会立即crash，虽然官方并没有说明），对应RAC提供了deliverOnMainThread方法">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-21T04:07:40.959Z">
+<meta property="og:updated_time" content="2018-01-21T04:09:28.302Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RAC中UITableViewCell信号重复绑定">
 <meta name="twitter:description" content="Cell使用RAC信号绑定场景 对应UITableViewCell的重用机制RAC提供了一种重用信号，cell在订阅信号时通常需要takeUntil:self.rac_prepareForReuseSignal 对于所有的UI操作必须放在主线程执行（iOS11系统以后，如果检测到UI操作不在主线程程序会立即crash，虽然官方并没有说明），对应RAC提供了deliverOnMainThread方法">
@@ -305,7 +305,7 @@
 <li>RAC中提供了一种简洁的RAC(…)宏来对cell的属性进行信号绑定</li>
 <li>按照UI和数据的分离原则，cell负责UI层的展示逻辑，与cell对应的cellItem负责为cell提供数据</li>
 </ul>
-<h2 id="cell信号重绑定问题"><a href="#cell信号重绑定问题" class="headerlink" title="cell信号重绑定问题"></a>cell信号重绑定问题</h2><p>基于上述4种场景，有如下代码片段：</p>
+<h2 id="Cell信号重绑定问题"><a href="#Cell信号重绑定问题" class="headerlink" title="Cell信号重绑定问题"></a>Cell信号重绑定问题</h2><p>基于上述4种场景，有如下代码片段：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cell 的setItem方法中绑定</span></span><br><span class="line"> </span><br><span class="line">RAC(<span class="keyword">self</span>.tipsLabel, text) = [[RACObserve(<span class="keyword">self</span>.item, tipsString) takeUntil:<span class="keyword">self</span>.rac_prepareForReuseSignal] deliverOnMainThread];</span><br></pre></td></tr></table></figure>
 <p>上述代码中满足了上面所说的4中场景：信号重用、主线程操作UI、RAC信号绑定以及UI数据分离。看代码并没有任何问题，但是实际上当tableView多次刷新，并且连续刷新的时间间隔很短时，会提示tipsLabel的信号重绑定错误。</p>
 <p>为什么会出现信号冲绑定的问题，代码中不是已经<code>takeUntil:self.rac_prepareForReuseSignal</code>了吗？</p>
@@ -483,7 +483,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cell使用RAC信号绑定场景"><span class="nav-number">1.</span> <span class="nav-text">Cell使用RAC信号绑定场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cell信号重绑定问题"><span class="nav-number">2.</span> <span class="nav-text">cell信号重绑定问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#deliverOnMainThread的实现"><span class="nav-number">2.1.</span> <span class="nav-text">deliverOnMainThread的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cell使用RAC信号绑定场景"><span class="nav-number">1.</span> <span class="nav-text">Cell使用RAC信号绑定场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cell信号重绑定问题"><span class="nav-number">2.</span> <span class="nav-text">Cell信号重绑定问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#deliverOnMainThread的实现"><span class="nav-number">2.1.</span> <span class="nav-text">deliverOnMainThread的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
             
 
           </div>
